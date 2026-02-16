@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Text Selection Color - Orange/Amber Theme */
+::selection {
+  background-color: #fcd34d !important; /* Tailwind amber-300 */
+  color: #78350f !important; /* Dark amber text for contrast */
+}
+
+/* Firefox support */
+::-moz-selection {
+  background-color: #fcd34d !important;
+  color: #78350f !important;
+}
