@@ -1,9 +1,24 @@
 import { useState } from "react";
+
+import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
-import { ArrowLeft, Upload, CheckCircle2, Briefcase } from "lucide-react";
+
+import { ArrowLeft, CheckCircle2, Briefcase } from "lucide-react";
+
+const container = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08 }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0 }
+};
 
 export function ApplicationFormPage({ jobTitle, onBack }: { jobTitle: string; onBack: () => void }) {
   const [formData, setFormData] = useState({
@@ -13,158 +28,185 @@ export function ApplicationFormPage({ jobTitle, onBack }: { jobTitle: string; on
     linkedin: '',
     coverLetter: ''
   });
-  const [fileName, setFileName] = useState<string>('');
+
+
+  const [fileName, setFileName] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       setFileName(e.target.files[0].name);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitted(true);
-    }, 500);
+
+    setTimeout(() => setIsSubmitted(true), 600);
   };
 
+  // ✅ SUCCESS SCREEN
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-slate-950 dark:via-slate-900 dark:to-orange-950/30 px-4 py-12 flex items-center justify-center">
-        <div className="max-w-md w-full text-center">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full flex items-center justify-center mb-6 shadow-lg">
-            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
-          </div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Application Received!</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Thank you for applying for the <span className="font-semibold text-orange-600 dark:text-orange-400">{jobTitle}</span> position. Our team will review your application and get back to you soon.
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-green-50 px-6">
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center max-w-md"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="mx-auto w-24 h-24 bg-green-100 rounded-3xl flex items-center justify-center mb-8 shadow-xl"
+          >
+            <CheckCircle2 className="w-12 h-12 text-green-600" />
+          </motion.div>
+
+          <h2 className="text-4xl font-black mb-4">Application Sent 🎉</h2>
+          <p className="text-slate-600 mb-8">
+            Thanks for applying for <span className="text-orange-600 font-bold">{jobTitle}</span>.
           </p>
-          <Button onClick={onBack} className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+
+          <Button onClick={onBack} className="rounded-full px-8 py-4">
             Back to Careers
           </Button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-slate-950 dark:via-slate-900 dark:to-orange-950/30 px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="mb-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50 -ml-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Careers
-        </Button>
 
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-sm font-medium mb-4">
+    <div className="relative min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-hidden">
+
+      {/* 🌈 Background Glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-1/3 w-72 h-72 bg-orange-400/20 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-amber-400/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative max-w-2xl mx-auto px-6 py-16">
+
+        {/* 🔙 Back */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Button
+            onClick={onBack}
+            className="group mb-10 flex items-center gap-2 px-5 py-2.5 rounded-full 
+            bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold 
+            shadow-md hover:shadow-lg transition-all"
+          >
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            Back
+          </Button>
+        </motion.div>
+
+        {/* 🚀 HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-14 text-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-xs font-bold mb-6">
             <Briefcase className="w-4 h-4" />
             {jobTitle}
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
-            Apply for this Role
+
+          <h1 className="text-4xl md:text-5xl font-black mb-4">
+            Apply for this <span className="text-orange-500">Role</span>
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Please fill out the form below. We review applications on a rolling basis.
+
+          <p className="text-slate-500">
+            We review applications quickly — don’t overthink it.
           </p>
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm p-8 rounded-3xl border border-orange-200 dark:border-slate-700 shadow-xl">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-slate-700 dark:text-slate-300">Full Name</Label>
-              <Input 
-                id="fullName" 
-                placeholder="John Doe" 
-                value={formData.fullName}
-                onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                required
-                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 dark:text-slate-300">Email Address</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="john@example.com" 
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                required
-                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-              />
-            </div>
+        {/* 🧾 FORM */}
+        <motion.form
+          onSubmit={handleSubmit}
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="bg-white/70 backdrop-blur-xl p-10 rounded-[2rem] border shadow-xl"
+        >
+
+          {/* Inputs */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {[
+              { id: "fullName", label: "Full Name", type: "text" },
+              { id: "email", label: "Email", type: "email" }
+            ].map((field) => (
+              <motion.div key={field.id} variants={item}>
+                <Label>{field.label}</Label>
+                <Input
+                  type={field.type}
+                  required
+                  className="mt-2 h-12 rounded-xl bg-slate-50 focus:ring-2 focus:ring-orange-400"
+                  onChange={(e) =>
+                    setFormData({ ...formData, [field.id]: e.target.value })
+                  }
+                />
+              </motion.div>
+            ))}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-slate-700 dark:text-slate-300">Phone Number</Label>
-              <Input 
-                id="phone" 
-                type="tel" 
-                placeholder="+1 (555) 000-0000" 
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="linkedin" className="text-slate-700 dark:text-slate-300">LinkedIn Profile</Label>
-              <Input 
-                id="linkedin" 
-                type="url" 
-                placeholder="linkedin.com/in/johndoe" 
-                value={formData.linkedin}
-                onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
-                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-              />
-            </div>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {[
+              { id: "phone", label: "Phone" },
+              { id: "linkedin", label: "LinkedIn" }
+            ].map((field) => (
+              <motion.div key={field.id} variants={item}>
+                <Label>{field.label}</Label>
+                <Input
+                  className="mt-2 h-12 rounded-xl bg-slate-50 focus:ring-2 focus:ring-orange-400"
+                  onChange={(e) =>
+                    setFormData({ ...formData, [field.id]: e.target.value })
+                  }
+                />
+              </motion.div>
+            ))}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="resume" className="text-slate-700 dark:text-slate-300">Resume / CV</Label>
-            <div className="relative">
-              <Input 
-                id="resume" 
-                type="file" 
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
-                required
-                className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 dark:file:bg-orange-900/30 file:text-orange-700 dark:file:text-orange-400 hover:file:bg-orange-100 dark:hover:file:bg-orange-900/50"
-              />
-              {fileName && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  {fileName}
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Accepted formats: PDF, DOC, DOCX (Max 5MB)</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="coverLetter" className="text-slate-700 dark:text-slate-300">Cover Letter (Optional)</Label>
-            <Textarea 
-              id="coverLetter" 
-              placeholder="Tell us why you're a great fit for this role..."
-              rows={5}
-              value={formData.coverLetter}
-              onChange={(e) => setFormData({...formData, coverLetter: e.target.value})}
-              className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 resize-none"
+          {/* File Upload */}
+          <motion.div variants={item} className="mb-6">
+            <Label>Resume</Label>
+            <Input
+              type="file"
+              onChange={handleFileChange}
+              required
+              className="mt-2 h-12 bg-slate-50 rounded-xl"
             />
-          </div>
+            {fileName && (
+              <p className="text-green-600 text-sm mt-2">{fileName}</p>
+            )}
+          </motion.div>
 
-          <Button type="submit" className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white py-6 rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all font-semibold text-lg">
+          {/* Cover Letter */}
+          <motion.div variants={item} className="mb-8">
+            <Label>Cover Letter</Label>
+            <Textarea
+              rows={4}
+              className="mt-2 rounded-xl bg-slate-50 focus:ring-2 focus:ring-orange-400"
+              onChange={(e) =>
+                setFormData({ ...formData, coverLetter: e.target.value })
+              }
+            />
+          </motion.div>
+
+          {/* Submit */}
+          <motion.button
+            variants={item}
+            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            type="submit"
+            className="w-full py-4 rounded-xl font-bold text-white 
+            bg-gradient-to-r from-orange-500 to-amber-500 
+            shadow-lg hover:shadow-orange-400/40 transition"
+          >
             Submit Application
-          </Button>
-        </form>
+          </motion.button>
+        </motion.form>
       </div>
     </div>
   );

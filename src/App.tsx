@@ -1,6 +1,7 @@
-﻿import { useState } from "react";
+﻿
+import { useState } from "react";
 import { HeroSection } from "./components/HeroSection";
-import { ProcessSteps } from "./components/ProcessSteps";
+import { HowItWorks } from "./components/HowItWorks";
 import { FeatureCards } from "./components/FeatureCards";
 import { TemplatesShowcase } from "./components/TemplatesShowcase";
 import { StatsSection } from "./components/StatsSection";
@@ -8,6 +9,12 @@ import { Testimonials } from "./components/Testimonials";
 import { AIAgents } from "./components/AIAgents";
 import { FAQ } from "./components/FAQ";
 import { CTABanner } from "./components/CTABanner";
+
+import { BlogSection } from "./components/BlogSection";
+import { FeaturesSection } from "./components/FeaturesSection";
+import { SearchFilterSection } from "./components/SearchFilterSection";
+import { LibrarySection } from "./components/LibrarySection";
+import { WebsiteCTA } from "./components/WebsiteCTA";
 import { Footer } from "./components/Footer";
 import { PrivacyPage } from "./components/PrivacyPage";
 import { TermsPage } from "./components/TermsPage";
@@ -20,9 +27,10 @@ import { ArticlesPage } from "./components/ArticlesPage";
 import { VisionMissionPage } from "./components/VisionMissionPage";
 import { ChatbotPage } from "./components/ChatbotPage";
 import { FloatingChatWidget } from "./components/FloatingChatWidget";
-import { TrustBanner } from "./components/TrustBanner";
-import { ThemeProvider } from "./components/ThemeProvider";
+
+import TrustBanner from "./components/TrustBanner";
 import { Navbar } from "./components/Navbar";
+import { FloatingAskBar } from "./components/FloatingAskBar";
 
 type PageType = 'home' | 'privacy' | 'terms' | 'contact' | 'careers' | 'apply' | 'login' | 'signup' | 'articles' | 'vision' | 'chatbot';
 
@@ -59,129 +67,53 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  if (currentPage === 'privacy') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <PrivacyPage onBack={handleBack} />
-        </div>
-      </ThemeProvider>
-    );
-  }
 
-  if (currentPage === 'terms') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <TermsPage onBack={handleBack} />
-        </div>
-      </ThemeProvider>
-    );
-  }
+  const PageWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen bg-white">
+      <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+      <div className="pt-20">
+        {children}
+      </div>
+      <FloatingChatWidget onOpenFullChat={() => handleNavigate('chatbot')} />
+      <FloatingAskBar onOpenFullChat={() => handleNavigate('chatbot')} />
+    </div>
+  );
 
-  if (currentPage === 'contact') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <ContactPage onBack={handleBack} />
-        </div>
-      </ThemeProvider>
-    );
-  }
+  if (currentPage === 'privacy') return <PageWrapper><PrivacyPage onBack={handleBack} /></PageWrapper>;
+  if (currentPage === 'terms') return <PageWrapper><TermsPage onBack={handleBack} /></PageWrapper>;
+  if (currentPage === 'contact') return <PageWrapper><ContactPage onBack={handleBack} /></PageWrapper>;
+  if (currentPage === 'articles') return <PageWrapper><ArticlesPage onBack={handleBack} /></PageWrapper>;
+  if (currentPage === 'vision') return <PageWrapper><VisionMissionPage onBack={handleBack} /></PageWrapper>;
+  if (currentPage === 'careers') return <PageWrapper><CareersPage onBack={handleBack} onApply={handleApply} /></PageWrapper>;
+  if (currentPage === 'apply') return <PageWrapper><ApplicationFormPage jobTitle={selectedJob} onBack={() => handleNavigate('careers')} /></PageWrapper>;
 
-  if (currentPage === 'articles') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <ArticlesPage onBack={handleBack} />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'vision') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <VisionMissionPage onBack={handleBack} />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'chatbot') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <ChatbotPage onBack={handleBack} />
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'careers') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <CareersPage onBack={handleBack} onApply={handleApply} />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'apply') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        <div className="pt-20">
-          <ApplicationFormPage jobTitle={selectedJob} onBack={() => handleNavigate('careers')} />
-        </div>
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'login') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <LoginPage onBack={handleBack} onLoginSuccess={handleLoginSuccess} onSignupClick={() => handleNavigate('signup')} />
-      </ThemeProvider>
-    );
-  }
-
-  if (currentPage === 'signup') {
-    return (
-      <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-        <SignupPage onBack={() => handleNavigate('login')} onSignupSuccess={handleLoginSuccess} />
-      </ThemeProvider>
-    );
-  }
+  if (currentPage === 'chatbot') return <div className="min-h-screen bg-white"><ChatbotPage onBack={handleBack} /></div>;
+  if (currentPage === 'login') return <div className="min-h-screen bg-white"><LoginPage onBack={handleBack} onLoginSuccess={handleLoginSuccess} onSignupClick={() => handleNavigate('signup')} /></div>;
+  if (currentPage === 'signup') return <div className="min-h-screen bg-white"><SignupPage onBack={() => handleNavigate('login')} onSignupSuccess={handleLoginSuccess} /></div>;
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="pro-technology-ui-theme">
-      <main className="min-h-screen bg-white dark:bg-slate-950">
-        <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-        
-        <div className="pt-20">
-          <HeroSection />
-          <TrustBanner />
-          <ProcessSteps />
-          <FeatureCards />
-          <TemplatesShowcase onNavigate={handleNavigate} />
-          <StatsSection />
-          <Testimonials onNavigate={handleNavigate} />
-          <AIAgents />
-          <FAQ onNavigate={handleNavigate} />
-          <CTABanner onNavigate={handleNavigate} />
-          <Footer />
-        </div>
-
-        {/* Floating Chat Widget */}
-        <FloatingChatWidget onOpenFullChat={() => handleNavigate('chatbot')} />
-      </main>
-    </ThemeProvider>
+    <div className="min-h-screen bg-white">
+      <Navbar onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+      <div className="pt-20">
+        <HeroSection />
+        <Testimonials onNavigate={handleNavigate} />
+        <TrustBanner />
+        <HowItWorks />
+        <FeatureCards />
+        <LibrarySection />
+        <SearchFilterSection />
+        <FeaturesSection />
+        <WebsiteCTA onNavigate={handleNavigate} />
+        <AIAgents />
+        <TemplatesShowcase onNavigate={handleNavigate} />
+        <StatsSection />
+        <BlogSection />
+        <CTABanner onNavigate={handleNavigate} />
+        <FAQ onNavigate={handleNavigate} />
+        <Footer />
+      </div>
+      <FloatingChatWidget onOpenFullChat={() => handleNavigate('chatbot')} />
+      <FloatingAskBar onOpenFullChat={() => handleNavigate('chatbot')} />
+    </div>
   );
 }

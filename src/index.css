@@ -2,14 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Text Selection Color - Orange/Amber Theme */
+
+/* ============================= */
+/* 🎯 Text Selection (Premium)   */
+/* ============================= */
 ::selection {
-  background-color: #fcd34d !important; /* Tailwind amber-300 */
-  color: #78350f !important; /* Dark amber text for contrast */
+  background-color: #fcd34d; /* amber-300 */
+  color: #78350f; /* amber-900 */
 }
 
-/* Firefox support */
 ::-moz-selection {
-  background-color: #fcd34d !important;
-  color: #78350f !important;
+  background-color: #fcd34d;
+  color: #78350f;
+}
+
+/* ============================= */
+/* 🚀 Marquee Animation          */
+/* ============================= */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 70s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 70s linear infinite reverse;
+}
+
+/* Pause on hover */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ============================= */
+/* ✨ Smooth UI Enhancements     */
+/* ============================= */
+
+/* Better font rendering */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body base (force white UI) */
+body {
+  background-color: #ffffff;
+  color: #0f172a; /* slate-900 */
+
 }

@@ -1,466 +1,313 @@
-import { ArrowLeft, MapPin, DollarSign, Clock, Briefcase, Heart, Users, Lightbulb, TrendingUp, Globe, Zap, Trophy, Coffee, Plane, GraduationCap } from "lucide-react";
+import { useState, useMemo } from "react";
+import {
+  ArrowLeft,
+  Briefcase,
+  MapPin,
+  Send,
+  X,
+  CheckCircle2,
+  ChevronRight,
+  Loader2,
+  Search,
+  Upload,
+  FileText,
+  Trash2
+} from "lucide-react";
 import { Button } from "../components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CareersPageProps {
   onBack: () => void;
-  onApply: (jobTitle: string) => void;
 }
 
-export function CareersPage({ onBack, onApply }: CareersPageProps) {
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
+export function CareersPage({ onBack }: CareersPageProps) {
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [filter, setFilter] = useState("All");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  // 📄 New: File State
+  const [file, setFile] = useState<File | null>(null);
+
   const jobs = [
     {
-      id: 1,
-      title: "Senior AI Engineer",
+      id: "ai-eng",
+      title: "AI Engineering Lead",
       department: "Engineering",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹8,00,000 - ₹12,00,000",
-      experience: "0 to 1 year",
-      description: "Lead the development of next-generation AI models and infrastructure."
+      location: "Remote / India",
+      experience: "0-1 years",
+      salary: "₹6L - ₹12L",
+      description: "Looking for an expert to lead our LLM integration and knowledge graph architecture."
     },
     {
-      id: 2,
-      title: "Product Designer",
-      department: "Design",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹6,00,000 - ₹9,00,000",
-      experience: "0 to 1 year",
-      description: "Shape the visual language of our AI products and user experiences."
-    },
-    {
-      id: 3,
-      title: "Data Scientist",
-      department: "Research",
-      location: "Hyderabad, India",
-      type: "Full-time",
-      salary: "₹7,00,000 - ₹10,00,000",
-      experience: "0 to 1 year",
-      description: "Analyze complex datasets to drive product innovation and strategy."
-    },
-    {
-      id: 4,
+      id: "fe-prod",
       title: "Frontend Developer",
-      department: "Engineering",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹5,00,000 - ₹8,00,000",
-      experience: "0 to 1 year",
-      description: "Build responsive, high-performance web interfaces using React and TypeScript."
-    },
-    {
-      id: 5,
-      title: "Backend Engineer",
-      department: "Engineering",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹6,00,000 - ₹9,00,000",
-      experience: "0 to 1 year",
-      description: "Design scalable APIs and microservices to power our AI platform."
-    },
-    {
-      id: 6,
-      title: "Machine Learning Researcher",
-      department: "Research",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹8,00,000 - ₹11,00,000",
-      experience: "0 to 1 year",
-      description: "Push the boundaries of generative AI and publish cutting-edge research."
-    },
-    {
-      id: 7,
-      title: "DevOps Engineer",
-      department: "Infrastructure",
-      location: "Pune, India",
-      type: "Full-time",
-      salary: "₹5,50,000 - ₹8,50,000",
-      experience: "0 to 1 year",
-      description: "Manage CI/CD pipelines and cloud infrastructure for high-availability systems."
-    },
-    {
-      id: 8,
-      title: "Technical Program Manager",
-      department: "Engineering",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹7,00,000 - ₹10,00,000",
-      experience: "0 to 1 year",
-      description: "Coordinate cross-functional teams to deliver complex technical projects on time."
-    },
-    {
-      id: 9,
-      title: "UX Researcher",
-      department: "Design",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹5,00,000 - ₹8,00,000",
-      experience: "0 to 1 year",
-      description: "Conduct user studies and translate insights into actionable design improvements."
-    },
-    {
-      id: 10,
-      title: "AI Ethics Specialist",
-      department: "Research",
-      location: "Mumbai, India",
-      type: "Full-time",
-      salary: "₹6,50,000 - ₹9,50,000",
-      experience: "0 to 1 year",
-      description: "Ensure our AI systems are developed and deployed responsibly and ethically."
-    },
-    {
-      id: 11,
-      title: "Product Manager",
-      department: "Product",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹7,50,000 - ₹11,00,000",
-      experience: "0 to 1 year",
-      description: "Define product vision and roadmap for our enterprise AI solutions."
-    },
-    {
-      id: 12,
-      title: "Security Engineer",
-      department: "Engineering",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹6,00,000 - ₹9,00,000",
-      experience: "0 to 1 year",
-      description: "Protect our platform and user data through robust security protocols."
-    },
-    {
-      id: 13,
-      title: "Content Marketing Manager",
-      department: "Marketing",
-      location: "Delhi, India",
-      type: "Full-time",
-      salary: "₹4,50,000 - ₹7,00,000",
-      experience: "0 to 1 year",
-      description: "Drive brand awareness through compelling content and strategic campaigns."
-    },
-    {
-      id: 14,
-      title: "Technical Writer",
       department: "Product",
       location: "Remote",
-      type: "Full-time",
-      salary: "₹4,00,000 - ₹6,50,000",
-      experience: "0 to 1 year",
-      description: "Create clear documentation and guides for developers using our APIs."
-    },
-    {
-      id: 15,
-      title: "Customer Success Manager",
-      department: "Operations",
-      location: "Gurugram, India",
-      type: "Full-time",
-      salary: "₹4,00,000 - ₹6,00,000",
-      experience: "0 to 1 year",
-      description: "Ensure our clients achieve their goals using Pro Technology solutions."
-    },
-    {
-      id: 16,
-      title: "Technical Recruiter",
-      department: "HR",
-      location: "Bangalore, India",
-      type: "Full-time",
-      salary: "₹3,50,000 - ₹5,50,000",
-      experience: "0 to 1 year",
-      description: "Identify and attract top engineering talent to join our growing team."
-    },
-    {
-      id: 17,
-      title: "Solutions Architect",
-      department: "Sales",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹7,00,000 - ₹10,00,000",
-      experience: "0 to 1 year",
-      description: "Partner with enterprise clients to design custom technical implementations."
-    },
-    {
-      id: 18,
-      title: "Mobile Developer (iOS/Android)",
-      department: "Engineering",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹5,50,000 - ₹8,50,000",
-      experience: "0 to 1 year",
-      description: "Develop native mobile applications to extend our AI platform to handheld devices."
+      experience: "0-1 years",
+      salary: "₹5L - ₹10L",
+      description: "Join our core team to build beautiful, responsive AI-driven interfaces using React and Tailwind."
     }
   ];
 
+  const filteredJobs = useMemo(() => 
+    filter === "All" ? jobs : jobs.filter(j => j.department === filter),
+    [filter]
+  );
+
+  // 📄 New: Handle File Upload logic
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.type === "application/pdf" || selectedFile.type.includes("msword") || selectedFile.type.includes("officedocument.wordprocessingml")) {
+        setFile(selectedFile);
+      } else {
+        alert("Please upload a PDF or Word document.");
+      }
+    }
+  };
+
+  const handleApplySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please upload your resume.");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    // Simulate API Call (Imagine sending via FormData)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setSelectedJob(null);
+      setFile(null); // Clear file for next use
+    }, 2500);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-slate-950 dark:via-slate-900 dark:to-orange-950/30">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Button variant="ghost" onClick={onBack} className="mb-8 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
-
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Build the Future with Us
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Join our mission to democratize AI development and empower millions of creators worldwide
-          </p>
-        </div>
-
-        {/* Founders' Note Section */}
-        <div className="mb-24 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-slate-900/50 dark:to-orange-950/30 rounded-3xl p-8 md:p-12 border border-orange-100 dark:border-orange-900/30">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-8">
-              <Heart className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                A Note from Our Founders
-              </h2>
-            </div>
-            
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                We started Pro Technology with a simple belief: <strong className="text-orange-600 dark:text-orange-400">building software shouldn't be this hard</strong>. 
-                We've seen too many brilliant ideas die because the technical barriers were too high. Too many founders spending months 
-                just to get an MVP. Too many teams burning out fighting with infrastructure instead of solving real problems.
-              </p>
-              
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                Our mission is to compress the time from idea to launch from months down to minutes. We're building the platform where 
-                anyone can describe their vision and instantly get a production-ready application. No templates. No limitations. 
-                Just pure creation powered by AI that truly understands what you're trying to build.
-              </p>
-              
-              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
-                But here's the thing: <strong className="text-orange-600 dark:text-orange-400">we can't do this alone</strong>. 
-                We need people who are obsessed with pushing the boundaries of what's possible. People who get excited about hard problems. 
-                People who believe that the future of software development will be radically different—and want to build that future.
-              </p>
-
-              <div className="bg-white/60 dark:bg-slate-800/60 rounded-2xl p-6 backdrop-blur-sm border border-orange-200 dark:border-orange-800/50">
-                <p className="text-lg text-gray-800 dark:text-gray-200 italic mb-4">
-                  "If you're someone who wants to work on technology that will impact millions of developers, designers, and creators 
-                  worldwide—we'd love to meet you."
-                </p>
-                <div className="flex items-center gap-6">
-                  <div className="flex -space-x-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold border-2 border-white dark:border-slate-800">
-                      AK
-                    </div>
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white font-bold border-2 border-white dark:border-slate-800">
-                      SP
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">The Pro Technology Team</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Building the future of development</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Who Thrives Here Section */}
-        <div className="mb-24 overflow-hidden">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-4">
-              <Users className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              <span className="text-orange-800 dark:text-orange-300 font-semibold">Our Culture</span>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Who Thrives Here
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              We're looking for people who embody these qualities and want to make an impact
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-8">
-            {[
-              {
-                icon: Lightbulb,
-                title: "Product Thinkers",
-                description: "You don't just write code—you understand why you're building something and how it impacts users.",
-                color: "from-yellow-500 to-orange-500"
-              },
-              {
-                icon: Zap,
-                title: "Fast Movers",
-                description: "You thrive in a fast-paced environment where shipping quickly and iterating is the norm.",
-                color: "from-orange-500 to-red-500"
-              },
-              {
-                icon: TrendingUp,
-                title: "Growth Mindset",
-                description: "You're constantly learning, adapting, and pushing yourself to improve every day.",
-                color: "from-teal-500 to-cyan-500"
-              },
-              {
-                icon: Globe,
-                title: "Global Perspective",
-                description: "You think about how your work affects users across different cultures and contexts worldwide.",
-                color: "from-blue-500 to-purple-500"
-              },
-              {
-                icon: Heart,
-                title: "User Obsessed",
-                description: "You genuinely care about making developers' lives better and creating delightful experiences.",
-                color: "from-pink-500 to-rose-500"
-              },
-              {
-                icon: Trophy,
-                title: "Excellence Driven",
-                description: "Good isn't good enough. You take pride in your craft and always aim for exceptional quality.",
-                color: "from-amber-500 to-yellow-500"
-              }
-            ].map((trait, index) => (
-              <div 
-                key={index} 
-                className="w-full max-sm:w-full sm:w-[calc(50%-1rem)] bg-white dark:bg-slate-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 hover:shadow-xl transition-all duration-300 group flex flex-col gap-8 sm:rotate-[10deg] hover:rotate-0"
-                style={{
-                  transformOrigin: 'center center'
-                }}
+    <div className="min-h-screen bg-[#F8FAFC] selection:bg-orange-100 selection:text-orange-900">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        
+        {/* Navigation */}
+        <div className="flex justify-between items-center mb-16">
+          <Button
+            onClick={onBack}
+            className="group flex items-center gap-2 px-5 py-2.5 rounded-full 
+            bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold 
+            shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            Back
+          </Button>
+          <div className="flex gap-2 bg-slate-200/50 p-1 rounded-full border border-slate-200">
+            {["All", "Engineering", "Product"].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                  filter === cat ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                }`}
               >
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${trait.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <trait.icon className="w-8 h-8 text-white" />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {trait.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-                    {trait.description}
-                  </p>
-                </div>
-              </div>
+                {cat}
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Perks & Benefits Section */}
-        <div className="mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Perks & Benefits
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              We invest in our team's growth, health, and happiness
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: GraduationCap,
-                title: "Learning Budget",
-                description: "Annual budget for courses, books, and conferences"
-              },
-              {
-                icon: Plane,
-                title: "Work from Anywhere",
-                description: "Fully remote with flexible hours and annual team retreats"
-              },
-              {
-                icon: Coffee,
-                title: "Health & Wellness",
-                description: "Comprehensive health insurance and wellness programs"
-              },
-              {
-                icon: Zap,
-                title: "Latest Tech",
-                description: "Top-tier equipment and tools to do your best work"
-              }
-            ].map((perk, index) => (
-              <div 
-                key={index} 
-                className="bg-gradient-to-br from-gray-50 to-orange-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 text-center group hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:border-orange-300 dark:hover:border-orange-600 cursor-pointer"
-                style={{
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s backwards`
-                }}
-              >
-                <div className="relative w-16 h-16 mx-auto mb-4">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 animate-pulse opacity-20"></div>
-                  <div className="relative w-full h-full rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center group-hover:rotate-12 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50">
-                    <perk.icon className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-                  {perk.title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-300 transition-colors">
-                  {perk.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <style>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
-
-        {/* Open Positions Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Open Positions
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Find your next role and start building the future with us
+        {/* Hero Header */}
+        <div className="mb-16">
+          <motion.h1 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-7xl font-black tracking-tight text-slate-900 mb-6"
+          >
+            Join <span className="text-orange-600">Inalgo</span>
+          </motion.h1>
+          <p className="text-xl text-slate-500 max-w-xl leading-relaxed">
+            Don't just use AI. Build the systems that make it accessible to everyone.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job) => (
-            <div key={job.id} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-orange-200 dark:border-slate-700 rounded-xl p-6 hover:shadow-2xl hover:scale-[1.02] hover:border-orange-400 dark:hover:border-orange-600 transition-all duration-300 flex flex-col">
-              <div className="mb-4">
-                <span className="inline-block px-3 py-1 text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 rounded-full mb-3">
+        {/* Job Grid */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid lg:grid-cols-2 gap-6"
+        >
+          {filteredJobs.length > 0 ? filteredJobs.map((job) => (
+            <motion.div
+              key={job.id}
+              variants={item}
+              whileHover={{ y: -5 }}
+              className="bg-white p-8 rounded-[2.5rem] border border-slate-200 hover:border-orange-200 hover:shadow-2xl hover:shadow-orange-100/50 transition-all cursor-pointer group"
+              onClick={() => setSelectedJob(job)}
+            >
+              <div className="flex justify-between items-start mb-6">
+                <span className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-tighter">
                   {job.department}
                 </span>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{job.title}</h3>
+                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-colors" />
               </div>
-
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 line-clamp-2 flex-grow">
-                {job.description}
-              </p>
-
-              <div className="space-y-2 mb-6 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  {job.location}
-                </div>
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 mr-2" />
-                  {job.type}
-                </div>
-                <div className="flex items-center">
-                  <Briefcase className="w-4 h-4 mr-2" />
-                  {job.experience}
-                </div>
-                <div className="flex items-center">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  {job.salary}
-                </div>
+              
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-orange-600 transition-colors">
+                {job.title}
+              </h3>
+              
+              <div className="flex flex-wrap gap-y-2 gap-x-6 text-slate-500 text-sm font-medium">
+                <div className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-orange-500" /> {job.location}</div>
+                <div className="flex items-center gap-1.5"><Briefcase className="w-4 h-4 text-orange-500" /> {job.experience}</div>
+                <div className="font-bold text-slate-900">{job.salary}</div>
               </div>
-
-              <Button 
-                onClick={() => onApply(job.title)}
-                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 transition-all"
-              >
-                Apply Now
-              </Button>
+            </motion.div>
+          )) : (
+            <div className="col-span-2 text-center py-20 bg-slate-100/50 rounded-[3rem] border-2 border-dashed border-slate-200">
+              <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500 font-bold">No roles found in this category.</p>
             </div>
-          ))}
-        </div>
+          )}
+        </motion.div>
       </div>
+
+      {/* --- Detailed Apply Modal --- */}
+      <AnimatePresence>
+        {selectedJob && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => { if(!isSubmitting) setSelectedJob(null); }}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+            />
+            
+            <motion.div
+              layoutId={selectedJob.id}
+              className="relative bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-10">
+                {isSubmitted ? (
+                  <div className="text-center py-12">
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                      <CheckCircle2 className="w-12 h-12 text-green-600" />
+                    </motion.div>
+                    <h2 className="text-3xl font-black mb-3">Application Received!</h2>
+                    <p className="text-slate-500 text-lg">Good luck! We'll be in touch within 48 hours.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex justify-between items-start mb-10">
+                      <div>
+                        <h2 className="text-4xl font-black text-slate-900 mb-2">{selectedJob.title}</h2>
+                        <p className="text-orange-600 font-bold uppercase tracking-widest text-sm">{selectedJob.department} • {selectedJob.location}</p>
+                      </div>
+                      <button onClick={() => setSelectedJob(null)} className="p-3 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+                        <X className="w-6 h-6 text-slate-600" />
+                      </button>
+                    </div>
+
+                    <div className="bg-slate-50 p-6 rounded-3xl mb-10">
+                      <h4 className="font-bold text-slate-900 mb-2">Role Description</h4>
+                      <p className="text-slate-600 leading-relaxed">{selectedJob.description}</p>
+                    </div>
+
+                    <form onSubmit={handleApplySubmit} className="space-y-6">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Name</label>
+                          <input required disabled={isSubmitting} className="w-full px-6 py-4 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-bold disabled:opacity-50" placeholder="Your Name" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email</label>
+                          <input required type="email" disabled={isSubmitting} className="w-full px-6 py-4 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-bold disabled:opacity-50" placeholder="email@example.com" />
+                        </div>
+                      </div>
+
+                      {/* 📄 Resume Upload Zone */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">
+                          Resume / CV (PDF)
+                        </label>
+                        
+                        {!file ? (
+                          <div className="relative group">
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              onChange={handleFileChange}
+                              disabled={isSubmitting}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            <div className="border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center bg-slate-50 group-hover:bg-orange-50 group-hover:border-orange-200 transition-all">
+                              <div className="p-3 bg-white rounded-xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                                <Upload className="w-5 h-5 text-orange-600" />
+                              </div>
+                              <p className="text-sm font-bold text-slate-600">Click or drag to upload</p>
+                              <p className="text-xs text-slate-400 mt-1">PDF, DOCX up to 5MB</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between p-4 bg-orange-50 border border-orange-100 rounded-[1.5rem]">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-orange-600 rounded-lg">
+                                <FileText className="w-5 h-5 text-white" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-slate-900 truncate max-w-[200px]">
+                                  {file.name}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              type="button"
+                              onClick={() => setFile(null)}
+                              className="p-2 hover:bg-orange-100 rounded-full text-orange-600 transition-colors"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Portfolio/LinkedIn Link</label>
+                        <input required type="url" disabled={isSubmitting} className="w-full px-6 py-4 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-bold disabled:opacity-50" placeholder="https://github.com/..." />
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className="w-full h-16 bg-slate-900 hover:bg-orange-600 text-white rounded-[1.5rem] font-bold text-lg shadow-xl transition-all active:scale-[0.98] disabled:bg-slate-400"
+                      >
+                        {isSubmitting ? (
+                          <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processing...</span>
+                        ) : (
+                          <span className="flex items-center gap-2">Submit My Application <Send className="w-5 h-5" /></span>
+                        )}
+                      </Button>
+                    </form>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

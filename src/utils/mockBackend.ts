@@ -113,8 +113,9 @@ export const mockArticles: Article[] = Array.from({ length: 50 }, (_, i) => {
   const topic = topics[i % topics.length];
   return {
     id,
-    title: `${topic} (${2026 - (i % 3)})`,
-    excerpt: `Explore the latest on ${topic.toLowerCase()} in ${2026 - (i % 3)}. This article covers new research, applications, and industry impact.`,
+
+    title: `${topic} (2026)`,
+    excerpt: `Explore the latest on ${topic.toLowerCase()} in 2026. This article covers new research, applications, and industry impact.`,
     details:
       `In this in-depth article on ${topic}, we examine the most recent developments, real-world deployments, and future outlook. Experts share their insights on how ${topic.toLowerCase()} is shaping the world, including challenges, opportunities, and ethical considerations.\n\nHighlights:\n- Newest research and case studies\n- Industry applications and success stories\n- Expert interviews\n- Data-driven analysis\n- Implementation tips\n- Risks, limitations, and future trends`,
     category: categories[i % categories.length],
